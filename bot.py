@@ -1,82 +1,63 @@
 #!/usr/bin/env python3
-"""
-Telegram Bot de ejemplo — Responde comandos, envia stickers, y muestra menu interactivo.
-Creado para el tutorial de YouTube.
-"""
+"""Create a complete Telegram bot using python-telegram-bot library."""
+
 import os
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import Application, CommandHandler
+from telegram import ReplyKeyboardMarkup
 
-# ── Configuracion ──
-TOKEN = os.environ.get("BOT_TOKEN", "PON_TU_TOKEN_AQUI")
-STICKER_ID = "CAACAgIAAxkBAA..."  # Reemplaza con tu sticker ID
+TOKEN = os.environ.get("BOT_TOKEN", "AQUI_TU_TOKEN")
 
-# ── Comando /start ──
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# ── Sticker IDs (example — replace with real ones) ──
+STICKER_ID = "CAACAgIAAxkBAA..."
+
+# ── Commands ──
+
+async def start(update, context):
+    """Handle /start command."""
+    await update.message.reply_text(
+        "Hola! Soy un bot de Telegram creado con Python. "
+        "Usa /start para verme, /sticker para un sticker, "
+        "/menu para el teclado, /help para ayuda.",
+    )
+
+async def sticker(update, context):
+    """Send a sticker."""
+    await update.message.reply_sticker(STICKER_ID)
+
+async def menu(update, context):
+    """Show custom keyboard."""
     botones = [
-        ["Precios", "Ayuda"],
-        ["Contacto", "Sobre mi"],
+        ["Ver Precio", "Ayuda"],
+        ["Contacto", "Info"],
     ]
     markup = ReplyKeyboardMarkup(botones, resize_keyboard=True)
     await update.message.reply_text(
-        "Hola! Soy tu bot creado con Python!\nElige una opcion:",
+        "Elige una opcion:",
         reply_markup=markup,
     )
 
-# ── Comando /help ──
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def help_command(update, context):
+    """Show help."""
     await update.message.reply_text(
         "Comandos disponibles:\n"
-        "/start - Iniciar bot\n"
-        "/help - Mostrar ayuda\n"
+        "/start - Iniciar\n"
         "/sticker - Recibir un sticker\n"
-        "/foto - Recibir una foto"
+        "/menu - Mostrar teclado\n"
+        "/help - Esta ayuda"
     )
-
-# ── Comando /sticker ──
-async def sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_sticker(
-        chat_id=update.effective_chat.id,
-        sticker=STICKER_ID,
-    )
-
-# ── Comando /foto ──
-async def foto(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    url = "https://i.imgur.com/ejemplo.jpg"
-    await context.bot.send_photo(
-        chat_id=update.effective_chat.id,
-        photo=url,
-        caption="Aqui tienes una foto!",
-    )
-
-# ── Manejador de mensajes de texto ──
-async def manejar_mensaje(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    texto = update.message.text.lower()
-
-    if texto == "precios":
-        await update.message.reply_text("Los precios son:\nCurso Python: $100\nBot: Gratis!")
-    elif texto == "ayuda":
-        await help_command(update, context)
-    elif texto == "contacto":
-        await update.message.reply_text("Escribeme a: ejemplo@email.com")
-    elif texto == "sobre mi":
-        await update.message.reply_text("Soy un bot creado con python-telegram-bot!")
-    else:
-        await update.message.reply_text(f"Escribiste: {texto}")
 
 # ── Main ──
+
 def main():
     app = Application.builder().token(TOKEN).build()
 
-    # Handlers
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("sticker", sticker))
-    app.add_handler(CommandHandler("foto", foto))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, manejar_mensaje))
+    app.add_handler(CommandHandler("menu", menu))
+    app.add_handler(CommandHandler("help", help_command))
 
-    print("Bot iniciado! Presiona Ctrl+C para detener.")
-    app.run_polling()
+    print("Bot iniciado. Presiona Ctrl+C para detener.")
+    app.run_polling(allowed_updates=["message"])
 
 if __name__ == "__main__":
     main()
