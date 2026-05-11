@@ -1,50 +1,46 @@
-# Telegram Bot en Python 🤖
+# Bot de Telegram en Python
 
-Bot de Telegram creado con `python-telegram-bot`. Responde a `/start`, envía stickers, muestra teclado personalizado y más.
+Bot de Telegram completo con comandos, stickers y teclado personalizado. Tutorial para el canal de YouTube.
 
-## Instalacion
+## Requisitos
+
+- Python 3.8+
+- Una cuenta de Telegram
+- Un token de [@BotFather](https://t.me/BotFather)
+
+## Instalación
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Configuracion
-
-1. Crea un bot con [@BotFather](https://t.me/BotFather) en Telegram
-2. Copia el token que recibes
-3. Asigna el token como variable de entorno:
-
-```bash
-export BOT_TOKEN="7234567890:AAE..."
-```
-
-O crea un archivo `.env`:
-
-```
-BOT_TOKEN=7234567890:AAE...
-```
-
 ## Uso
 
+1. Edita `bot.py` y reemplaza `TU_TOKEN_AQUI` con tu token de BotFather
+2. Ejecuta:
+
 ```bash
-python3 bot.py
+python bot.py
 ```
+
+3. Abre Telegram, busca tu bot y escribe `/start`
 
 ## Comandos
 
-- `/start` — Iniciar el bot
-- `/sticker` — Recibir un sticker
-- `/menu` — Mostrar teclado con botones
-- `/help` — Ayuda
+- `/start` — Inicia el bot y muestra el teclado
+- `/help` — Muestra los comandos disponibles
+- `/sticker` — Envia un sticker de ejemplo
 
-## Despliegue gratis
+Escribe "Hola" o "Adios" y el bot te responderá.
 
-Sube este repositorio a [Render.com](https://render.com) como Web Service:
-- Build Command: `pip install -r requirements.txt`
-- Start Command: `python3 bot.py`
-- Variable de entorno: `BOT_TOKEN`
+## Despliegue en Render.com
 
-## Requisitos
+1. Sube este repo a GitHub
+2. Crea un Web Service en [Render.com](https://render.com)
+3. Conecta tu repo
+4. Start Command: `python bot.py`
+5. Listo! Corre 24/7 gratis
 
-- Python 3.8+
-- pip
+## Licencia
+
+MIT
