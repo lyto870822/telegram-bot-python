@@ -1,62 +1,77 @@
 #!/usr/bin/env python3
-"""Create a complete Telegram bot using python-telegram-bot library."""
+"""
+bot.py — Bot de Telegram completo con comandos, stickers y teclado.
+Tutorial completo: https://github.com/lyto870822/telegram-bot-python
 
-import os
-from telegram.ext import Application, CommandHandler
+Uso:
+  pip install -r requirements.txt
+  python bot.py
+"""
+import asyncio
 from telegram import ReplyKeyboardMarkup
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
-TOKEN = os.environ.get("BOT_TOKEN", "AQUI_TU_TOKEN")
+TOKEN = "TU_TOKEN_AQUI"  # Reemplaza con el token de @BotFather
 
-# ── Sticker IDs (example — replace with real ones) ──
-STICKER_ID = "CAACAgIAAxkBAA..."
-
-# ── Commands ──
-
+# ─── Comando /start ─────────────────────────────────
 async def start(update, context):
-    """Handle /start command."""
+    """Responde con mensaje de bienvenida y teclado."""
+    botones = [["Hola", "Adios"]]
+    teclado = ReplyKeyboardMarkup(botones, resize_keyboard=True)
+
     await update.message.reply_text(
-        "Hola! Soy un bot de Telegram creado con Python. "
-        "Usa /start para verme, /sticker para un sticker, "
-        "/menu para el teclado, /help para ayuda.",
+        "Hola! Soy tu bot de Telegram creado con Python 🚀\n\n"
+        "Usa los botones o escribe /help para ver comandos",
+        reply_markup=teclado
     )
 
-async def sticker(update, context):
-    """Send a sticker."""
-    await update.message.reply_sticker(STICKER_ID)
-
-async def menu(update, context):
-    """Show custom keyboard."""
-    botones = [
-        ["Ver Precio", "Ayuda"],
-        ["Contacto", "Info"],
-    ]
-    markup = ReplyKeyboardMarkup(botones, resize_keyboard=True)
-    await update.message.reply_text(
-        "Elige una opcion:",
-        reply_markup=markup,
-    )
-
+# ─── Comando /help ──────────────────────────────────
 async def help_command(update, context):
-    """Show help."""
+    """Muestra los comandos disponibles."""
     await update.message.reply_text(
         "Comandos disponibles:\n"
-        "/start - Iniciar\n"
-        "/sticker - Recibir un sticker\n"
-        "/menu - Mostrar teclado\n"
-        "/help - Esta ayuda"
+        "/start - Inicia el bot\n"
+        "/help - Muestra esta ayuda\n"
+        "/sticker - Recibe un sticker\n"
+        "Escribe 'Hola' o 'Adios' en el chat"
     )
 
-# ── Main ──
+# ─── Comando /sticker ───────────────────────────────
+async def send_sticker(update, context):
+    """Envia un sticker de ejemplo."""
+    # Reemplaza con tu sticker_id de @Stickers o el que obtengas
+    sticker_id = "CAACAgIAAxkBAAEBGQJmZ3QqP6St4T2JqR8HwQABCbcFAAQ"
+    await update.message.reply_sticker(sticker_id)
 
+# ─── Manejador de mensajes de texto ─────────────────
+async def handle_message(update, context):
+    """Responde a mensajes de texto."""
+    text = update.message.text.lower()
+
+    if "hola" in text:
+        await update.message.reply_text("Hola! Como estas?")
+    elif "adios" in text:
+        await update.message.reply_text("Adios! Vuelve pronto")
+    else:
+        await update.message.reply_text(
+            f"Dijiste: {text}\nUsa /help para ver comandos"
+        )
+
+# ─── Main ───────────────────────────────────────────
 def main():
     app = Application.builder().token(TOKEN).build()
 
+    # Registrar comandos
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("sticker", sticker))
-    app.add_handler(CommandHandler("menu", menu))
     app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("sticker", send_sticker))
 
-    print("Bot iniciado. Presiona Ctrl+C para detener.")
+    # Registrar mensajes de texto (no comandos)
+    app.add_handler(MessageHandler(
+        filters.TEXT & ~filters.COMMAND, handle_message
+    ))
+
+    print("Bot iniciado! Presiona Ctrl+C para detener")
     app.run_polling(allowed_updates=["message"])
 
 if __name__ == "__main__":
